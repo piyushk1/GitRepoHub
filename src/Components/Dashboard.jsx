@@ -2,47 +2,39 @@
 /* eslint-disable react/prop-types */
 import  { useState } from "react";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = ({ setUserData }) => {
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState(null);
-  const history = useHistory();
+  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    if (!username) {
-      setError("Please enter a GitHub username.");
-      return;
-    }
-
-    try {
-      const response = await axios.get(`https://api.github.com/users/${username}`);
-      const user = response.data;
-
-      // Fetch the user data and repositories
-      const repoResponse = await axios.get(`https://api.github.com/users/${username}/repos`);
-      setUserData({
-        ...user,
-        repositories: repoResponse.data
-      });
-
-      history.push("/repos");
-    } catch (err) {
-      setError("User not found or an error occurred.");
+  const handleSubmit = () => {
+    if (username.trim()) {
+      navigate('/repository', { state: { username } });
     }
   };
 
   return (
-    <div>
-      <h1>Enter GitHub Username</h1>
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1>GitHub User Search</h1>
       <input
         type="text"
+        placeholder="Enter GitHub username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        placeholder="Enter GitHub username"
+        style={{ padding: '10px', fontSize: '16px', width: '300px' }}
       />
-      <button onClick={handleSubmit}>Submit</button>
-      {error && <p>{error}</p>}
+      <button
+        onClick={handleSubmit}
+        style={{
+          padding: '10px 20px',
+          marginLeft: '10px',
+          fontSize: '16px',
+          cursor: 'pointer',
+        }}
+      >
+        Search
+      </button>
     </div>
   );
 };
